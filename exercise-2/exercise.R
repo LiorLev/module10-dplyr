@@ -1,34 +1,65 @@
-# Exercise 2: Data Frame Practice with `dplyr`.
-# Use a different appraoch to accomplish the same tasks as exercise-1
+# Exercise 2: Data Frame Practice
 
 # Install devtools package: allows installations from GitHub
-install.packages('devtools')
+#install.packages('devtools')
 
 # Install "fueleconomy" package from GitHub
-devtools::install_github("hadley/fueleconomy")
+#devtools::install_github("hadley/fueleconomy")
 
-# Require/library the fueleconomy package
+# Require/library the "fueleconomy" package
+library(fueleconomy)
+
+# You should now have access to the `vehicles` data.frame
+
+View(vehicles)
+
+# Select the different manufacturers (makes) of the cars in this data set.
+
+select(vehicles, make)
+
+# Use the `unique()` function to determine how many different car manufacturers
+# are represented by the data set.
+
+length(unique(vehicles$make))
+
+# Filter the data set for vehicles manufactured in 1997
 
 
-# You should have have access to the `vehicles` data.frame
+data.1997 <- filter(vehicles, vehicles$year==1997)
 
+# Arrange the 1997 cars by highway (`hwy`) gas milage
+# Hint: use the `order()` function similar to how you would use the `max()` function.
+# See also: https://www.r-bloggers.com/r-sorting-a-data-frame-by-the-contents-of-a-column/
 
-# Create a data.frame of vehicles from 1997
+arrange(data.1997, hwy)
 
+# Mutate the 1997 cars data frame to add a column `average` that has the average gas milage between
+# city and highway for each car
 
-# Use the `unique` function to verify that there is only 1 value in the `year` column of your new data.frame
+data.1997 <- mutate(data.1997, average = (hwy+cty)/2)
+View(data.1997)
 
+# Filter the whole vehicles data set for 2-Wheel Drive vehicles that get more than 20 miles/gallon in the city
+# Save this new data frame in a variable.
 
-# Create a data.frame of 2-Wheel Drive vehicles that get more than 20 miles/gallon in the city
-
+two.wheel <- filter(vehicles, vehicles$drive=="2-Wheel Drive")
 
 # Of those vehicles, what is the vehicle ID of the vehicle with the worst hwy mpg?
+# Hint: filter for the worst vehicle, then select its ID.
 
 
-# Write a function that takes a `year` and a `make` as parameters, and returns 
-# The vehicle that gets the most hwy miles/gallon of vehicles of that make in that year
+vehicle.id <- two.wheel %>% select(id) %>% filter(two.wheel$hwy == min(two.wheel$hwy)) 
+vehicle.id
 
+# Write a function that takes a `year` and a `make` as parameters,
+# and returns the vehicle that gets the most hwy miles/gallon of vehicles of that make in that year
+# You'll need to filter more!
+
+most.mpg.hwy <- function(n.make, n.year){
+  filter <-  filter(vehicles,make == n.make, year == n.year)
+  car <- filter(filter, hwy == max(hwy))
+  return(car)
+}
 
 # What was the most efficient honda model of 1995?
-
-
+most.mpg.hwy("Honda", 1995)
